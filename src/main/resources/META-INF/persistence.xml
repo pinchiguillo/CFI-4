@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             version="3.0">
+    <persistence-unit name="miPU">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.publicaciones.models.Contacto</class>
+        <class>com.publicaciones.models.Documento</class>
+        <class>com.publicaciones.models.Publicacion</class>
+        <class>com.publicaciones.models.Usuario</class>
+        <properties>
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/publicaciones?serverTimezone=UTC"/>
+            <property name="hibernate.connection.username" value="usuario"/>
+            <property name="hibernate.connection.password" value="contrasenya"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
