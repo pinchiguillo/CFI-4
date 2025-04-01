@@ -33,6 +33,13 @@
 
         <!-- Hibernate Entity Manager (incluido en core desde Hibernate 5.2+) -->
 
+        <!-- MySQL Driver -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+
 
         <!-- H2 Database (para pruebas) -->
         <dependency>
