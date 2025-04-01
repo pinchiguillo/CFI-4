@@ -1,9 +1,27 @@
 package com.publicaciones.models;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "contactos")
 public class Contacto {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
+
+    @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
+
+    @Column(name = "telefono", length = 20)
     private String telefono;
+
+    public Contacto() {
+        // Constructor vacío obligatorio para Hibernate
+    }
 
     public Contacto(String nombre, String email, String telefono) {
         this.nombre = nombre;
@@ -12,6 +30,11 @@ public class Contacto {
     }
 
     // Getters y Setters
+
+    public Long getId() {
+        return id;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -33,7 +56,6 @@ public class Contacto {
 
     // Método para validar la sintaxis del email
     public boolean validarEmail() {
-        // Implementación simplificada: se verifica que el email contenga el carácter "@"
         return email != null && email.contains("@");
     }
 
@@ -46,6 +68,11 @@ public class Contacto {
 
     @Override
     public String toString() {
-        return "Contacto [nombre=" + nombre + ", email=" + email + ", telefono=" + telefono + "]";
+        return "Contacto{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", email='" + email + '\'' +
+                ", telefono='" + telefono + '\'' +
+                '}';
     }
 }
