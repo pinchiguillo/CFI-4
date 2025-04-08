@@ -1,43 +1,44 @@
 package com.publicaciones.models;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "documentos")
+@Table(name = "Documento")
 public class Documento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "contenido", columnDefinition = "TEXT")
+    @Column(name = "nombre_archivo")
+    private String nombreArchivo;
+
+    @Column(name = "contenido", length = 65535)
     private String contenido;
 
     @Column(name = "en_edicion")
     private boolean enEdicion;
 
-    @ElementCollection
-    @CollectionTable(name = "historial_cambios", joinColumns = @JoinColumn(name = "documento_id"))
-    @Column(name = "cambio")
-    private List<String> historialCambios = new ArrayList<>();
-
+    // CONSTRUCTORES
     public Documento() {
-        this.contenido = "";
-        this.enEdicion = false;
     }
 
-    public Documento(String contenido) {
+    public Documento(String nombreArchivo, String contenido) {
+        this.nombreArchivo = nombreArchivo;
         this.contenido = contenido;
-        this.enEdicion = false;
-        this.historialCambios.add(contenido);
     }
 
-    // Getters y Setters
-
+    // GETTERS y SETTERS
     public Long getId() {
         return id;
+    }
+
+    public String getNombreArchivo() {
+        return nombreArchivo;
+    }
+
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
     }
 
     public String getContenido() {
@@ -46,7 +47,6 @@ public class Documento {
 
     public void setContenido(String contenido) {
         this.contenido = contenido;
-        this.historialCambios.add(contenido);
     }
 
     public boolean isEnEdicion() {
@@ -57,29 +57,14 @@ public class Documento {
         this.enEdicion = enEdicion;
     }
 
-    public List<String> getHistorialCambios() {
-        return historialCambios;
-    }
-
-    // Métodos simplificados (no persistentes)
-
-    public boolean guardarDocumento(String rutaArchivo) {
-        // Aquí podrías escribir la lógica para guardar en archivo externo
-        return true;
-    }
-
-    public boolean cargarDocumento(String rutaArchivo) {
-        // Aquí podrías escribir la lógica para cargar desde archivo externo
-        return true;
-    }
-
+    // NUEVO: Sobrescribir toString() para que el combo muestre algo amigable
     @Override
     public String toString() {
-        String preview = contenido.length() > 20 ? contenido.substring(0, 20) + "..." : contenido;
-        return "Documento{" +
-                "id=" + id +
-                ", enEdicion=" + enEdicion +
-                ", contenido='" + preview + '\'' +
-                '}';
+        if (nombreArchivo != null && !nombreArchivo.trim().isEmpty()) {
+            return nombreArchivo;
+        } else {
+            // Si no hay nombre, retorna algo genérico
+            return "[Sin nombre] (ID: " + (id != null ? id : "??") + ")";
+        }
     }
 }

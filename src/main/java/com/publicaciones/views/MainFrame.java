@@ -4,6 +4,7 @@ import com.publicaciones.controllers.BuscadorController;
 import com.publicaciones.controllers.ComparadorController;
 import com.publicaciones.controllers.DibujoController;
 import com.publicaciones.controllers.EditorController;
+import com.publicaciones.models.Documento;   // <-- Importación necesaria
 import javax.swing.*;
 import java.awt.*;
 
@@ -19,36 +20,8 @@ public class MainFrame extends JFrame {
         // ---------------------------
         // Editor Tab
         // ---------------------------
+        // Se instancia la vista del editor, la cual ya contiene la configuración de eventos
         EditorView editorView = new EditorView();
-        EditorController editorController = new EditorController();
-        // Nuevo Documento: limpia el área y crea un documento vacío.
-        editorView.getNewButton().addActionListener(e -> {
-            editorController.crearDocumento("");
-            editorView.getTextArea().setText("");
-        });
-        // Cargar Documento: lee el ID, carga el documento y muestra su contenido.
-        editorView.getLoadButton().addActionListener(e -> {
-            try {
-                Long id = Long.parseLong(editorView.getLoadIdField().getText().trim());
-                if (editorController.cargarDocumento(id)) {
-                    editorView.getTextArea().setText(editorController.getDocumento().getContenido());
-                    JOptionPane.showMessageDialog(editorView, "Documento cargado.");
-                } else {
-                    JOptionPane.showMessageDialog(editorView, "Documento no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(editorView, "ID inválido.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        // Guardar Documento: actualiza el contenido y guarda en la base de datos.
-        editorView.getSaveButton().addActionListener(e -> {
-            editorController.editarDocumento(editorView.getTextArea().getText());
-            if (editorController.guardarDocumento()) {
-                JOptionPane.showMessageDialog(editorView, "Documento guardado.");
-            } else {
-                JOptionPane.showMessageDialog(editorView, "Error al guardar el documento.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
         tabbedPane.addTab("Editor", editorView);
 
         // ---------------------------
@@ -80,12 +53,14 @@ public class MainFrame extends JFrame {
         BuscadorView buscadorView = new BuscadorView();
         BuscadorController buscadorController = new BuscadorController();
         buscadorView.getBuscarButton().addActionListener(e -> {
-            // Para este ejemplo se usa un ID fijo (por ejemplo, 1L).
-            // En una aplicación real se podría agregar un campo para ingresar el ID del documento.
-            Long docId = 1L;
+            Documento doc = (Documento) buscadorView.getDocumentoComboBox().getSelectedItem();
+            if (doc == null) {
+                JOptionPane.showMessageDialog(buscadorView, "Seleccione un documento.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String palabra = buscadorView.getPalabraField().getText().trim();
             try {
-                java.util.List<Integer> indices = buscadorController.buscarPalabra(docId, palabra);
+                java.util.List<Integer> indices = buscadorController.buscarPalabra(doc.getId(), palabra);
                 StringBuilder sb = new StringBuilder("Índices: ").append(indices);
                 buscadorView.getResultadoArea().setText(sb.toString());
             } catch (IllegalArgumentException ex) {
@@ -97,7 +72,6 @@ public class MainFrame extends JFrame {
         // ---------------------------
         // Contactos Tab
         // ---------------------------
-        // La vista de contactos ya incluye su propio controlador internamente.
         ContactoView contactoView = new ContactoView();
         tabbedPane.addTab("Contactos", contactoView);
 
@@ -106,18 +80,16 @@ public class MainFrame extends JFrame {
         // ---------------------------
         DibujoView dibujoView = new DibujoView();
         DibujoController dibujoController = new DibujoController(dibujoView);
-        // Panel para botones de acción en el dibujo
         JPanel dibujoPanel = new JPanel(new BorderLayout());
         dibujoPanel.add(dibujoView, BorderLayout.CENTER);
         JPanel dibujoButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton limpiarButton = new JButton("Limpiar Dibujo");
-        JButton guardarButton = new JButton("Guardar Dibujo");
+        JButton guardarDibujoButton = new JButton("Guardar Dibujo");
         dibujoButtonsPanel.add(limpiarButton);
-        dibujoButtonsPanel.add(guardarButton);
+        dibujoButtonsPanel.add(guardarDibujoButton);
         dibujoPanel.add(dibujoButtonsPanel, BorderLayout.SOUTH);
-        // Eventos para limpiar y guardar el dibujo
         limpiarButton.addActionListener(e -> dibujoView.limpiarDibujo());
-        guardarButton.addActionListener(e -> {
+        guardarDibujoButton.addActionListener(e -> {
             String ruta = JOptionPane.showInputDialog(dibujoView, "Ingrese la ruta de guardado (ej. dibujo.png):");
             if (ruta != null && !ruta.trim().isEmpty()) {
                 boolean guardado = dibujoController.guardarDibujo(ruta.trim());
