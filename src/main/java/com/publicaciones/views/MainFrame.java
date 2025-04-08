@@ -29,13 +29,10 @@ public class MainFrame extends JFrame {
         // ---------------------------
         ComparadorView comparadorView = new ComparadorView();
         ComparadorController comparadorController = new ComparadorController();
-        // Se obtienen los documentos de la BD usando un EditorController (o el que corresponda)
         EditorController ec = new EditorController();
         List<Documento> documentos = ec.listarDocumentos();
-        // Llenamos el combo de ComparadorView
         comparadorView.setDocumentos(documentos);
         comparadorView.getCompareButton().addActionListener(e -> {
-            // Obtenemos los documentos seleccionados desde los JComboBox
             Documento doc1 = (Documento) comparadorView.getDocumentoComboBox1().getSelectedItem();
             Documento doc2 = (Documento) comparadorView.getDocumentoComboBox2().getSelectedItem();
 
@@ -61,7 +58,6 @@ public class MainFrame extends JFrame {
         // ---------------------------
         BuscadorView buscadorView = new BuscadorView();
         BuscadorController buscadorController = new BuscadorController();
-        // También llenamos el combo de BuscadorView
         buscadorView.setDocumentos(documentos);
         buscadorView.getBuscarButton().addActionListener(e -> {
             Documento doc = (Documento) buscadorView.getDocumentoComboBox().getSelectedItem();
@@ -91,26 +87,18 @@ public class MainFrame extends JFrame {
         // ---------------------------
         DibujoView dibujoView = new DibujoView();
         DibujoController dibujoController = new DibujoController(dibujoView);
+
         JPanel dibujoPanel = new JPanel(new BorderLayout());
         dibujoPanel.add(dibujoView, BorderLayout.CENTER);
+
+        // Panel inferior con solo el botón "Limpiar Dibujo"
         JPanel dibujoButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton limpiarButton = new JButton("Limpiar Dibujo");
-        JButton guardarDibujoButton = new JButton("Guardar Dibujo");
         dibujoButtonsPanel.add(limpiarButton);
-        dibujoButtonsPanel.add(guardarDibujoButton);
         dibujoPanel.add(dibujoButtonsPanel, BorderLayout.SOUTH);
+
         limpiarButton.addActionListener(e -> dibujoView.limpiarDibujo());
-        guardarDibujoButton.addActionListener(e -> {
-            String ruta = JOptionPane.showInputDialog(dibujoView, "Ingrese la ruta de guardado (ej. dibujo.png):");
-            if (ruta != null && !ruta.trim().isEmpty()) {
-                boolean guardado = dibujoController.guardarDibujo(ruta.trim());
-                if (guardado) {
-                    JOptionPane.showMessageDialog(dibujoView, "Dibujo guardado exitosamente.");
-                } else {
-                    JOptionPane.showMessageDialog(dibujoView, "Error al guardar el dibujo.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+
         tabbedPane.addTab("Dibujo", dibujoPanel);
 
         add(tabbedPane);
