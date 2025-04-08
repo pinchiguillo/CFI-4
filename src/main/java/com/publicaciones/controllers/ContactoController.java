@@ -9,6 +9,7 @@ public class ContactoController {
     private ContactoService contactoService;
 
     public ContactoController() {
+        // Se instancia el servicio de contacto que utiliza Hibernate para la persistencia
         this.contactoService = new ContactoService();
     }
 
@@ -26,13 +27,18 @@ public class ContactoController {
         return contactoService.obtenerTodos();
     }
 
-    // Actualiza un contacto existente (se asume que se identifica por un id interno en el servicio)
-    public boolean actualizarContacto(int id, String nombre, String email, String telefono) {
+    // Actualiza un contacto existente identificado por su id
+    public boolean actualizarContacto(Long id, String nombre, String email, String telefono) {
         return contactoService.actualizarContacto(id, nombre, email, telefono);
     }
 
     // Elimina un contacto identificado por su id
-    public boolean eliminarContacto(int id) {
+    public boolean eliminarContacto(Long id) {
         return contactoService.eliminarContacto(id);
+    }
+
+    // Permite cerrar el servicio y liberar recursos (EntityManager)
+    public void cerrar() {
+        contactoService.cerrar();
     }
 }

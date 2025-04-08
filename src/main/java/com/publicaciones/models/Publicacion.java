@@ -1,12 +1,33 @@
 package com.publicaciones.models;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table(name = "publicaciones")
 public class Publicacion {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "titulo", nullable = false, length = 200)
     private String titulo;
+
+    @Column(name = "contenido", columnDefinition = "TEXT", nullable = false)
     private String contenido;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fecha", nullable = false)
     private Date fecha;
-    private Usuario autor; // Relación con la clase Usuario
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "autor_id", nullable = false)
+    private Usuario autor;
+
+    public Publicacion() {
+        // Constructor vacío requerido por Hibernate
+    }
 
     public Publicacion(String titulo, String contenido, Date fecha, Usuario autor) {
         this.titulo = titulo;
@@ -16,24 +37,32 @@ public class Publicacion {
     }
 
     // Getters y Setters
+
+    public Long getId() {
+        return id;
+    }
+
     public String getTitulo() {
         return titulo;
     }
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
+
     public String getContenido() {
         return contenido;
     }
     public void setContenido(String contenido) {
         this.contenido = contenido;
     }
+
     public Date getFecha() {
         return fecha;
     }
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
+
     public Usuario getAutor() {
         return autor;
     }
@@ -41,12 +70,12 @@ public class Publicacion {
         this.autor = autor;
     }
 
-    // Método para actualizar el contenido de la publicación
+    // Lógica adicional
+
     public void actualizarContenido(String nuevoContenido) {
         this.contenido = nuevoContenido;
     }
 
-    // Método para obtener un extracto del contenido
     public String obtenerExtracto(int numCaracteres) {
         if (contenido.length() <= numCaracteres) {
             return contenido;
@@ -56,6 +85,11 @@ public class Publicacion {
 
     @Override
     public String toString() {
-        return "Publicacion [titulo=" + titulo + ", fecha=" + fecha + ", autor=" + autor + "]";
+        return "Publicacion{" +
+                "id=" + id +
+                ", titulo='" + titulo + '\'' +
+                ", fecha=" + fecha +
+                ", autor=" + (autor != null ? autor.getNombre() : "Sin autor") +
+                '}';
     }
 }

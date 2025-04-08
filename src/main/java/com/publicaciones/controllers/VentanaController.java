@@ -15,21 +15,36 @@ public class VentanaController {
         this.ventanasAbiertas = new ArrayList<>();
     }
 
-    // Abre una nueva ventana interna y la agrega a la lista de ventanas abiertas
+    // Abre una nueva ventana interna y la agrega a la lista de ventanas abiertas.
     public void abrirVentana(JInternalFrame ventana) {
+        if (ventana == null) {
+            return;
+        }
         ventanasAbiertas.add(ventana);
         desktop.add(ventana);
         ventana.setVisible(true);
     }
 
-    // Cierra la ventana especificada y la elimina de la lista
+    // Cierra la ventana especificada y la elimina de la lista.
     public void cerrarVentana(JInternalFrame ventana) {
+        if (ventana == null) {
+            return;
+        }
         ventana.dispose();
         ventanasAbiertas.remove(ventana);
     }
 
-    // Devuelve la lista de ventanas abiertas
+    // Cierra todas las ventanas abiertas.
+    public void cerrarTodasVentanas() {
+        // Se crea una copia para evitar ConcurrentModificationException.
+        List<JInternalFrame> copiaVentanas = new ArrayList<>(ventanasAbiertas);
+        for (JInternalFrame ventana : copiaVentanas) {
+            cerrarVentana(ventana);
+        }
+    }
+
+    // Devuelve una copia de la lista de ventanas abiertas.
     public List<JInternalFrame> getVentanasAbiertas() {
-        return ventanasAbiertas;
+        return new ArrayList<>(ventanasAbiertas);
     }
 }
