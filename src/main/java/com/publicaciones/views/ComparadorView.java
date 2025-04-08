@@ -1,12 +1,15 @@
 package com.publicaciones.views;
 
+import com.publicaciones.models.Documento;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class ComparadorView extends JPanel {
 
-    private JTextField docIdField1;
-    private JTextField docIdField2;
+    // Se sustituyen los JTextField por JComboBox de Documento
+    private JComboBox<Documento> documentoComboBox1;
+    private JComboBox<Documento> documentoComboBox2;
     private JButton compareButton;
     private JTextArea resultArea;
 
@@ -19,14 +22,14 @@ public class ComparadorView extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Panel superior para ingresar los IDs de los documentos
+        // Panel superior para la selección de documentos mediante dropdowns
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        inputPanel.add(new JLabel("Documento ID 1:"));
-        docIdField1 = new JTextField(10);
-        inputPanel.add(docIdField1);
-        inputPanel.add(new JLabel("Documento ID 2:"));
-        docIdField2 = new JTextField(10);
-        inputPanel.add(docIdField2);
+        inputPanel.add(new JLabel("Documento 1:"));
+        documentoComboBox1 = new JComboBox<>();
+        inputPanel.add(documentoComboBox1);
+        inputPanel.add(new JLabel("Documento 2:"));
+        documentoComboBox2 = new JComboBox<>();
+        inputPanel.add(documentoComboBox2);
         add(inputPanel, BorderLayout.NORTH);
 
         // Área central para mostrar el resultado de la comparación
@@ -45,13 +48,30 @@ public class ComparadorView extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    // Métodos de acceso para el controlador
-    public JTextField getDocIdField1() {
-        return docIdField1;
+    /**
+     * Método para poblar ambos dropdowns con la lista de documentos.
+     * Se utiliza el método toString() de Documento para mostrar la información de cada item.
+     */
+    public void setDocumentos(List<Documento> documentos) {
+        DefaultComboBoxModel<Documento> model1 = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<Documento> model2 = new DefaultComboBoxModel<>();
+        if (documentos != null) {
+            for (Documento doc : documentos) {
+                model1.addElement(doc);
+                model2.addElement(doc);
+            }
+        }
+        documentoComboBox1.setModel(model1);
+        documentoComboBox2.setModel(model2);
     }
 
-    public JTextField getDocIdField2() {
-        return docIdField2;
+    // Getters para que el controlador acceda a cada uno de los componentes
+    public JComboBox<Documento> getDocumentoComboBox1() {
+        return documentoComboBox1;
+    }
+
+    public JComboBox<Documento> getDocumentoComboBox2() {
+        return documentoComboBox2;
     }
 
     public JButton getCompareButton() {

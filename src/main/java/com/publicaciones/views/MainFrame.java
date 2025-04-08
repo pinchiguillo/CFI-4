@@ -4,9 +4,10 @@ import com.publicaciones.controllers.BuscadorController;
 import com.publicaciones.controllers.ComparadorController;
 import com.publicaciones.controllers.DibujoController;
 import com.publicaciones.controllers.EditorController;
-import com.publicaciones.models.Documento;   // <-- Importación necesaria
+import com.publicaciones.models.Documento;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class MainFrame extends JFrame {
 
@@ -20,7 +21,6 @@ public class MainFrame extends JFrame {
         // ---------------------------
         // Editor Tab
         // ---------------------------
-        // Se instancia la vista del editor, la cual ya contiene la configuración de eventos
         EditorView editorView = new EditorView();
         tabbedPane.addTab("Editor", editorView);
 
@@ -29,18 +29,27 @@ public class MainFrame extends JFrame {
         // ---------------------------
         ComparadorView comparadorView = new ComparadorView();
         ComparadorController comparadorController = new ComparadorController();
+        // Se obtienen los documentos de la BD usando un EditorController (o el que corresponda)
+        EditorController ec = new EditorController();
+        List<Documento> documentos = ec.listarDocumentos();
+        // Llenamos el combo de ComparadorView
+        comparadorView.setDocumentos(documentos);
         comparadorView.getCompareButton().addActionListener(e -> {
+            // Obtenemos los documentos seleccionados desde los JComboBox
+            Documento doc1 = (Documento) comparadorView.getDocumentoComboBox1().getSelectedItem();
+            Documento doc2 = (Documento) comparadorView.getDocumentoComboBox2().getSelectedItem();
+
+            if (doc1 == null || doc2 == null) {
+                JOptionPane.showMessageDialog(comparadorView, "Seleccione dos documentos para comparar.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             try {
-                Long id1 = Long.parseLong(comparadorView.getDocIdField1().getText().trim());
-                Long id2 = Long.parseLong(comparadorView.getDocIdField2().getText().trim());
-                java.util.List<String> diffs = comparadorController.compararDocumentos(id1, id2);
+                java.util.List<String> diffs = comparadorController.compararDocumentos(doc1.getId(), doc2.getId());
                 StringBuilder sb = new StringBuilder();
                 for (String diff : diffs) {
                     sb.append(diff).append("\n");
                 }
                 comparadorView.getResultArea().setText(sb.toString());
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(comparadorView, "IDs inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(comparadorView, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -52,6 +61,8 @@ public class MainFrame extends JFrame {
         // ---------------------------
         BuscadorView buscadorView = new BuscadorView();
         BuscadorController buscadorController = new BuscadorController();
+        // También llenamos el combo de BuscadorView
+        buscadorView.setDocumentos(documentos);
         buscadorView.getBuscarButton().addActionListener(e -> {
             Documento doc = (Documento) buscadorView.getDocumentoComboBox().getSelectedItem();
             if (doc == null) {
